@@ -1,28 +1,49 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {
+  Component,
+  useContext,
+  useEffect,
+  useState,
+  FunctionComponent
+} from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import { Web3Context } from "./Web3Context";
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
-}
+type HeaderProps = {};
+
+const Header: FunctionComponent<HeaderProps> = () => {
+  const web3 = useContext(Web3Context);
+  const [userAddress, setUserAddress] = useState("");
+
+  const getUserAddress = async () => {
+    const [
+      userAddress,
+      ...otherAddresses
+    ] = await web3.getAvailableAddressesAsync();
+
+    setUserAddress(userAddress);
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(getUserAddress, 1000);
+    return () => clearInterval(intervalId);
+  });
+
+  return (
+    <div style={{ background: "gray", width: "100%", height: "20px" }}>
+      <span>{userAddress && `Account: ${userAddress}`}</span>
+    </div>
+  );
+};
+
+type AppProps = {};
+
+const App: FunctionComponent<AppProps> = ({}) => {
+  return (
+    <div>
+      <Header />
+    </div>
+  );
+};
 
 export default App;
