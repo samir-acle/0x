@@ -1,33 +1,11 @@
-import React, {
-  Component,
-  useContext,
-  useEffect,
-  useState,
-  FunctionComponent
-} from "react";
-import logo from "./logo.svg";
+import React, { FunctionComponent } from "react";
 import "./App.css";
-import { Web3Context } from "./Web3Context";
+import { useEthereumAccount } from "./web3Hooks";
 
 type HeaderProps = {};
 
 const Header: FunctionComponent<HeaderProps> = () => {
-  const web3 = useContext(Web3Context);
-  const [userAddress, setUserAddress] = useState("");
-
-  const getUserAddress = async () => {
-    const [
-      userAddress,
-      ...otherAddresses
-    ] = await web3.getAvailableAddressesAsync();
-
-    setUserAddress(userAddress);
-  };
-
-  useEffect(() => {
-    const intervalId = setInterval(getUserAddress, 1000);
-    return () => clearInterval(intervalId);
-  });
+  const userAddress = useEthereumAccount();
 
   return (
     <div style={{ background: "gray", width: "100%", height: "20px" }}>
