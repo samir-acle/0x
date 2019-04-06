@@ -15,7 +15,6 @@ providerEngine.start();
 (window as any).ethereum.enable();
 const web3Wrapper = new Web3Wrapper(providerEngine);
 
-// maybe behavior subject
 const accountSubject = new Subject<string[]>();
 
 const userAccount$ = interval(1000).pipe(
