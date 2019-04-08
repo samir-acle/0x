@@ -1,10 +1,11 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import "./App.css";
-import { useEthereumAccount } from "./web3Hooks";
-
-type HeaderProps = {};
+import { useEthereumAccount, useAcceptedNetworkId } from "./web3Hooks";
+import { useWeb3 } from "./setupWeb3";
 
 // for colors https://colorhunt.co/palette/42191
+
+type HeaderProps = {};
 
 const Header: FunctionComponent<HeaderProps> = () => {
   const userAddress = useEthereumAccount();
@@ -29,9 +30,22 @@ const Header: FunctionComponent<HeaderProps> = () => {
   );
 };
 
+type BalanceDisplayProps = {};
+
+const BalanceDisplay: FunctionComponent<BalanceDisplayProps> = () => {
+  const userAddress = useEthereumAccount();
+
+  return <div style={{}}>Balances</div>;
+};
+
 type AppProps = {};
 
+//TODO: add error boundary in to catch the network switch error - refresh if that happens?
+
 const App: FunctionComponent<AppProps> = ({}) => {
+  useWeb3();
+  const isAcceptedNetwork = useAcceptedNetworkId([50]);
+
   return (
     <div
       style={{
@@ -42,6 +56,7 @@ const App: FunctionComponent<AppProps> = ({}) => {
       }}
     >
       <Header />
+      {isAcceptedNetwork && <BalanceDisplay />}
     </div>
   );
 };
