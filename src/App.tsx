@@ -1,6 +1,11 @@
 import React, { FunctionComponent, useEffect } from "react";
 import "./App.css";
-import { useEthereumAccount, useAcceptedNetworkId } from "./web3Hooks";
+import {
+  useEthereumAccount,
+  useAcceptedNetworkId,
+  useOwnBalanceOf,
+  allowedTokens
+} from "./web3Hooks";
 import { useWeb3 } from "./setupWeb3";
 
 // for colors https://colorhunt.co/palette/42191
@@ -33,9 +38,18 @@ const Header: FunctionComponent<HeaderProps> = () => {
 type BalanceDisplayProps = {};
 
 const BalanceDisplay: FunctionComponent<BalanceDisplayProps> = () => {
-  const userAddress = useEthereumAccount();
+  const zrxBalance = useOwnBalanceOf(allowedTokens.Zrx);
+  const ethBalance = useOwnBalanceOf(allowedTokens.Eth);
+  const wethBalance = useOwnBalanceOf(allowedTokens.Weth);
 
-  return <div style={{}}>Balances</div>;
+  return (
+    <div style={{}}>
+      Balances
+      <div>ZRX: {zrxBalance}</div>
+      <div>ETH: {ethBalance}</div>
+      <div>WETH: {wethBalance}</div>
+    </div>
+  );
 };
 
 type AppProps = {};

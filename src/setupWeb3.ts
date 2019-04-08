@@ -4,13 +4,17 @@ import {
   RPCSubprovider,
   Web3ProviderEngine
 } from "@0x/subproviders";
+import { ContractWrappers } from "@0x/contract-wrappers";
+import { getContractAddressesForNetworkOrThrow } from "@0x/contract-addresses";
 import { Subject, interval } from "rxjs";
-import { switchMap } from "rxjs/operators";
+import { switchMap, distinctUntilChanged, map } from "rxjs/operators";
 import { NetworkSubprovider } from "./NetworkSubprovider";
+import { LogSubprovider } from "./LogSubprovider";
 import React, { useContext, useEffect, useState } from "react";
 
 // TODO - improve this, return promise and await, or something similar
 const providerEngine = new Web3ProviderEngine();
+// providerEngine.addProvider(new LogSubprovider());
 providerEngine.addProvider(new NetworkSubprovider((window as any).ethereum));
 providerEngine.addProvider(new SignerSubprovider((window as any).ethereum));
 providerEngine.addProvider(new RPCSubprovider("http://localhost:8545"));
@@ -38,6 +42,7 @@ export const networkId$ = interval(1000).pipe(
   })
 );
 
+// TODO - these will start polling before anything subscribes
 export const useWeb3 = () => {
   useEffect(() => {
     const userAccountSubscription = userAccount$.subscribe(accountSubject);
@@ -53,3 +58,13 @@ export const useWeb3 = () => {
 export default web3Wrapper;
 export const account$ = accountSubject.asObservable();
 export const network$ = networkSubject.asObservable();
+
+export const contractWrappers$ = network$.pipe(
+  distinctUntilChanged(),
+  map(networkId => new ContractWrappers(providerEngine, { networkId }))
+);
+
+export const contractAddresses$ = network$.pipe(
+  distinctUntilChanged(),
+  map(networkId => getContractAddressesForNetworkOrThrow(networkId))
+);
